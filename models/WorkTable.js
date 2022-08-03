@@ -4,7 +4,6 @@ const TableSchema = new mongoose.Schema({
 
     number: {type: String, required: true},
     openSpaceNumber: {type: String, required: true},
-    //developer: {type: mongoose.Schema.Types.ObjectId , default: null},
     developer: {type: mongoose.Schema.Types.ObjectId , default: null},
     pc: {type: String, default: null},
     monitor: {type: String, default: null},

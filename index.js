@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import cors from 'cors';
 
 import tableRoute from './routes/tables.js';
 import developersRoute from './routes/developers.js';
@@ -15,8 +16,8 @@ const DB_PASSWORD = process.env.DB_PASSWORD;
 const DB_NAME = process.env.DB_NAME;
 
 //Middleware
-
 app.use(express.json());
+app.use(cors());
 
 //Routes
 //http://localhost:3003/api/table

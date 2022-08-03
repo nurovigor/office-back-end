@@ -5,12 +5,12 @@ import mongoose from "mongoose";
 export const getDevelopers = async (req, res) => {
     try {
         const developers = await Developers.find();
-        if (!developers) {
-            return res.json({massage: "Developers not yet added"})
-        }
+
+        if (!developers) return res.sendStatus(404);
+
         return res.json(developers)
     } catch (e) {
-        console.log(e)
+        return res.status(400).send(e)
     }
 }
 
@@ -22,17 +22,17 @@ export const createDeveloper = async (req, res) => {
             phone,
         } = req.body;
 
-
         const newDeveloper = new Developers({
             firstName,
             lastName,
             phone,
         })
+
         await newDeveloper.save();
 
         return res.json(newDeveloper)
     } catch (e) {
-        console.log(e)
+        return res.status(400).send(e)
     }
 }
 
@@ -47,9 +47,7 @@ export const updateDeveloper = async (req, res) => {
 
         const developer = await Developers.findById(mongoose.Types.ObjectId(req.params.id));
 
-        if (!developer) {
-            return res.json({massage: "This developer does not exist."})
-        }
+        if (!developer) return res.sendStatus(404);
 
         developer.firstName = firstName
         developer.lastName = lastName
@@ -59,7 +57,7 @@ export const updateDeveloper = async (req, res) => {
         await developer.save()
         return res.json(developer)
     } catch (e) {
-        console.log(e)
+        return res.status(400).send(e)
     }
 }
 
@@ -67,10 +65,10 @@ export const removeDeveloper = async (req, res) => {
     try {
         const developer = await Developers.findByIdAndDelete(mongoose.Types.ObjectId(req.params.id))
 
-        if (!developer) return res.json({message: "This developer does not exist."})
+        if (!developer) return res.sendStatus(404);
 
-        return res.json({message: "Developer was removed"})
+        return res.json(developer)
     } catch (e) {
-        console.log(e)
+        return res.status(400).send(e)
     }
 }

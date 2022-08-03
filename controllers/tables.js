@@ -18,7 +18,7 @@ export const createTable = async (req, res) => {
 
         return res.json(newTable)
     } catch (e) {
-        console.log(e)
+        return res.status(400).send(e)
     }
 }
 
@@ -38,6 +38,7 @@ export const updateTable = async (req, res) => {
 
         const table = await Tables.findById(mongoose.Types.ObjectId(req.params.id));
 
+        if (!table) return res.sendStatus(404);
 
         table.developer = developerId ? mongoose.Types.ObjectId(developerId) : null;
         table.pc = pc
@@ -52,7 +53,7 @@ export const updateTable = async (req, res) => {
 
         return res.json(table)
     } catch (e) {
-        console.log(e)
+        return res.status(400).send(e)
     }
 }
 
@@ -69,15 +70,25 @@ export const getTables = async (req, res) => {
                 }
             },
             {
-                $unwind: {path: '$developer'}
+                $set: {
+                    developer: {
+                        $cond: {
+                            if: {
+                                $arrayElemAt: ["$developer", 0]
+                            },
+                            then: {$arrayElemAt: ["$developer", 0]},
+                            else: null,
+                        }
+                    }
+                }
             },
         ])
         if (!tables) {
-            return res.json({massage: "Tables is not exist"})
+            return res.sendStatus(404);
         }
         return res.json(tables)
     } catch (e) {
-        console.log(e)
+        return res.status(400).send(e)
     }
 }
 
@@ -85,10 +96,10 @@ export const removeTable = async (req, res) => {
     try {
         const table = await Tables.findByIdAndDelete(mongoose.Types.ObjectId(req.params.id));
 
-        if (!table) return res.json({message: "This table does not exist."})
+        if (!table) return res.sendStatus(404);
 
-        return res.json({message: "Table was removed"})
+        return res.json(table)
     } catch (e) {
-        console.log(e)
+        return res.status(400).send(e)
     }
 }
