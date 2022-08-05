@@ -38,9 +38,21 @@ export const updateTable = async (req, res) => {
 
         const table = await Tables.findById(mongoose.Types.ObjectId(req.params.id));
 
+
         if (!table) return res.sendStatus(404);
 
-        table.developer = developerId ? mongoose.Types.ObjectId(developerId) : null;
+        let oldTable = null;
+        if(developerId !== 'null'){
+            oldTable = await Tables.findOne({'developer': {_id: developerId}});
+        }
+
+
+        if (oldTable && table.number !== oldTable.number) {
+            oldTable.developer = null;
+            await oldTable.save();
+        }
+
+        table.developer = developerId !== 'null' ? mongoose.Types.ObjectId(developerId) : null;
         table.pc = pc
         table.monitor = monitor
         table.keyboard = keyboard
