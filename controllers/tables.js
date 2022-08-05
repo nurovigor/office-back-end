@@ -60,7 +60,37 @@ export const updateTable = async (req, res) => {
 
         await table.save();
 
-        return res.json(table)
+        const tables = await Tables.aggregate([
+            {
+                $match:{
+                    _id: mongoose.Types.ObjectId(req.params.id)
+                }
+            },
+            {
+                $lookup: {
+                    from: 'developers',
+                    localField: 'developer',
+                    foreignField: '_id',
+                    as: 'developer'
+                }
+            },
+            {
+                $set: {
+                    developer: {
+                        $cond: {
+                            if: {
+                                $arrayElemAt: ["$developer", 0]
+                            },
+                            then: {$arrayElemAt: ["$developer", 0]},
+                            else: null,
+                        }
+                    }
+                }
+            },
+        ]);
+
+
+        return res.json(tables[0])
     } catch (e) {
         return res.status(400).send(e)
     }
