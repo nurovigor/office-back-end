@@ -62,7 +62,7 @@ export const updateTable = async (req, res) => {
 
         const tables = await Tables.aggregate([
             {
-                $match:{
+                $match: {
                     _id: mongoose.Types.ObjectId(req.params.id)
                 }
             },
@@ -90,7 +90,7 @@ export const updateTable = async (req, res) => {
         ]);
 
 
-        return res.json(tables[0])
+        return res.json(oldTable ? [tables[0], oldTable] : tables[0])
     } catch (e) {
         return res.status(400).send(e)
     }
