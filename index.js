@@ -5,6 +5,7 @@ import cors from 'cors';
 
 import tableRoute from './routes/tables.js';
 import developersRoute from './routes/developers.js';
+import technicsRoute from './routes/technics.js';
 
 const app = express();
 dotenv.config();
@@ -26,6 +27,9 @@ app.use('/api/tables', tableRoute)
 
 //http://localhost:3003/api/developers
 app.use('/api/developers', developersRoute)
+
+//http://localhost:3003/api/technics
+app.use('/api/technics', technicsRoute)
 
 
 async function start() {
