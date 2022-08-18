@@ -41,7 +41,7 @@ export const updateTable = async (req, res) => {
 
         if (!table) return res.sendStatus(404);
 
-        const oldTable = developerId !== 'null' && await Tables.findOne({'developer': {_id: developerId}});
+        const oldTable = developerId !== null && await Tables.findOne({'developer': {_id: developerId}});
 
 
         if (oldTable && table.number !== oldTable.number) {

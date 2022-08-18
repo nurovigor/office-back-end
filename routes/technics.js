@@ -1,5 +1,7 @@
 import {Router} from 'express';
 import {createTechnic, getTechnics, removeTechnic, updateTechnic, getFilters} from "../controllers/technics.js";
+import {technicValidationRules} from "../validator/technics.js";
+import {getValidationResult} from "../validator/getValidationResult.js";
 
 const router = new Router();
 
@@ -10,10 +12,10 @@ router.get('/', getTechnics);
 router.get('/filters', getFilters);
 
 //create developer
-router.post('/', createTechnic);
+router.post('/', technicValidationRules(), getValidationResult, createTechnic);
 
 //update technic
-router.put('/:id', updateTechnic);
+router.put('/:id', technicValidationRules(), getValidationResult, updateTechnic);
 
 //remove developer
 router.delete('/:id', removeTechnic);

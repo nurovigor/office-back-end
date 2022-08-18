@@ -13,7 +13,7 @@ const toArrayString = (arr, field) => {
 export const getTechnics = async (req, res) => {
     const {
         page = 1,
-        count = 5,
+        count = 10,
     } = req.query;
 
     const query = {};
@@ -23,13 +23,18 @@ export const getTechnics = async (req, res) => {
     if (req.query.bind) query.bind = req.query.bind;
 
     const sort = {};
+    let querySort = [];
 
-    const querySort = JSON.parse(req.query.sort);
+    if (req.query.sort) {
+        querySort = JSON.parse(req.query.sort ? req.query.sort : []);
+    }
+
 
     if (querySort.length) {
         if (querySort[1] === "asc") {
+            sort[querySort[0]] = 1;
         }
-        sort[querySort[0]] = 1;
+
         if (querySort[1] === "desc") {
             sort[querySort[0]] = -1;
         }
@@ -37,12 +42,14 @@ export const getTechnics = async (req, res) => {
 
     try {
         const technics = await Technics.find(query)
-            .limit(count * 1)
+            .limit(count)
             .skip((page - 1) * count)
             .sort(sort)
             .exec();
 
-        if (!technics) return res.sendStatus(404);
+        if (!technics) {
+            return res.sendStatus(404)
+        }
 
         const totalCountItems = await Technics.find(query);
 
@@ -75,14 +82,13 @@ export const createTechnic = async (req, res) => {
         const {
             name,
             type,
-            bind,
             serial
         } = req.body;
+
 
         const newTechnic = new Technics({
             name,
             type,
-            bind,
             serial
         })
 
@@ -100,7 +106,6 @@ export const updateTechnic = async (req, res) => {
         const {
             name,
             type,
-            bind,
             serial
         } = req.body;
 
@@ -110,7 +115,6 @@ export const updateTechnic = async (req, res) => {
 
         technic.name = name
         technic.type = type
-        technic.bind = bind
         technic.serial = serial
 
         await technic.save()
@@ -123,7 +127,12 @@ export const updateTechnic = async (req, res) => {
 
 export const removeTechnic = async (req, res) => {
     try {
-        const technic = await Technics.findByIdAndDelete(mongoose.Types.ObjectId(req.params.id))
+        let technic = await Technics.findById(mongoose.Types.ObjectId(req.params.id));
+
+        if (technic.bind) {
+            return res.status(405).send({error: 'Unable to remove the attached device'})
+        }
+        technic = await Technics.findByIdAndDelete(mongoose.Types.ObjectId(req.params.id))
 
         if (!technic) return res.sendStatus(404);
 

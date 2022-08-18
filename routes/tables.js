@@ -1,5 +1,7 @@
 import {Router} from 'express';
 import {createTable, getTables, removeTable, updateTable} from "../controllers/tables.js";
+import {createTableValidationRules, updateTableValidationRules} from "../validator/tables.js";
+import {getValidationResult} from "../validator/getValidationResult.js";
 
 const router = new Router();
 
@@ -7,11 +9,11 @@ const router = new Router();
 router.get('/', getTables)
 
 //create table
-router.post('/', createTable);
+router.post('/', createTableValidationRules(), getValidationResult, createTable);
 
 
 //update table
-router.put('/:id', updateTable)
+router.put('/:id', updateTableValidationRules(), getValidationResult, updateTable)
 
 //remove table
 router.delete('/:id', removeTable)

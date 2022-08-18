@@ -1,5 +1,7 @@
 import {Router} from 'express';
 import {createDeveloper, getDevelopers, removeDeveloper, updateDeveloper} from "../controllers/developers.js";
+import {developerValidationRules} from "../validator/developers.js";
+import {getValidationResult} from "../validator/getValidationResult.js";
 
 const router = new Router();
 
@@ -7,10 +9,10 @@ const router = new Router();
 router.get('/', getDevelopers)
 
 //create developer
-router.post('/', createDeveloper);
+router.post('/', developerValidationRules(), getValidationResult, createDeveloper);
 
-//create developer
-router.put('/:id', updateDeveloper);
+//update developer
+router.put('/:id', developerValidationRules(), getValidationResult, updateDeveloper);
 
 //remove developer
 router.delete('/:id', removeDeveloper);
