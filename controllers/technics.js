@@ -6,7 +6,16 @@ const toArrayString = (arr, field) => {
     return {
         name: field,
         selectedOption: '',
-        options: [...new Set(arr.map((item) => item[field].toString()))]
+        options: [...new Set(arr.map((item) => {
+            if (typeof item[field] === 'boolean') {
+                if (item[field]) {
+                    return 'Yes';
+                } else {
+                    return 'No';
+                }
+            }
+            return item[field];
+        }))]
     };
 }
 
@@ -20,7 +29,7 @@ export const getTechnics = async (req, res) => {
 
     if (req.query.name) query.name = req.query.name;
     if (req.query.type) query.type = req.query.type;
-    if (req.query.bind) query.bind = req.query.bind;
+    if (req.query.bind) query.bind = req.query.bind.toLowerCase() === 'yes';
 
     const sort = {};
     let querySort = [];
@@ -106,7 +115,8 @@ export const updateTechnic = async (req, res) => {
         const {
             name,
             type,
-            serial
+            serial,
+            bind
         } = req.body;
 
         const technic = await Technics.findById(mongoose.Types.ObjectId(req.params.id));
@@ -116,6 +126,7 @@ export const updateTechnic = async (req, res) => {
         technic.name = name
         technic.type = type
         technic.serial = serial
+        technic.bind = bind
 
         await technic.save()
         return res.json(technic)
